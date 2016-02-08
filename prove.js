@@ -9,6 +9,7 @@
 // `as` is a list of operands (Expressions)
 function Expression(op, as) {
 	this.operator = op;
+	// Break up bound quantifiers: all_x( p(x) ) --> all(x, p(x))
 	if (this.operator.indexOf("_") >= 0) {
 		var d = this.operator.split("_");
 		return new Expression( d[0], [new Atom(d[1])].concat(as) );
