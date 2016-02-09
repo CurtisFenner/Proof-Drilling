@@ -12,6 +12,9 @@ function Expression(op, as) {
 	// Break up bound quantifiers: all_x( p(x) ) --> all(x, p(x))
 	if (this.operator.indexOf("_") >= 0) {
 		var d = this.operator.split("_");
+		if (d[1][0] === '@') {
+			return new Expression( d[0], [d[1].substr(1)].concat(as) );
+		}
 		return new Expression( d[0], [new Atom(d[1])].concat(as) );
 	}
 	this.args = as.slice(0);
@@ -112,6 +115,9 @@ function Match(pattern, object, eq, assignments) {
 	// pattern is a string -- a variable. it may be free,
 	// or already bound to an expression
 	if ("string" === typeof pattern) {
+		if (pattern.indexOf("@") >= 0) {
+			throw "Warning: bad pattern used with '" + pattern + "'";
+		}
 		if (assignments[pattern]) {
 			if (!eq( assignments[pattern] , object)) {
 				return false;
