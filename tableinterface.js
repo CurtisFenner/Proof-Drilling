@@ -91,7 +91,7 @@ function RenderLine(proof, i) {
 			// Verify the statement.
 			if (!proof[i].text) {
 				// Require the student enters a statement to check
-				throw "Statement input is blank";
+				throw "";
 			}
 			// Parse and render the expression (throws on failure)
 			proof[i].expression = Parse(proof[i].text);
