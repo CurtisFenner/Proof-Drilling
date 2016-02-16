@@ -109,10 +109,10 @@ var operatorRightAssociative = {
 // If a and b are equal, it returns whether the operator
 // is left-associative.
 function lower(a, b) {
-	if (operatorPrecedence[a] == operatorPrecedence[b]) {
-		return !operatorRightAssociative[a];
+	if (getPrecedence(a) == getPrecedence(b)) {
+		return !operatorRightAssociative[a] && a.indexOf("_") < 0;
 	} else {
-		return operatorPrecedence[a] < operatorPrecedence[b];
+		return getPrecedence(a) < getPrecedence(b);
 	}
 }
 
@@ -150,7 +150,9 @@ function FixTokens(x) {
 	// ["(", "quant_x", ")"] --> ["quant_x"]
 	for (var i = 1; i+1 < r.length; i++) {
 		if (r[i-1] === "(" && r[i+1] === ")" && r[i].indexOf("_") >= 0) {
-			r = r.slice(0, i - 1).concat([ r[i] ]).concat(r.slice(i + 2));
+			r.splice(i+1, 1);
+			r.splice(i-1, 1);
+			//r = r.slice(0, i - 1).concat([ r[i] ]).concat(r.slice(i + 2));
 		}
 	}
 	return r;
@@ -216,6 +218,9 @@ function Parse(text) {
 		var t = x[i];
 		if (getPrecedence(t)) {
 			var a = getArity(t) || 2;
+			if (i - a < 0) {
+				throw "Could not parse near '" + t + "'; expected more";
+			}
 			var before = x.slice(0, i - a);
 			var args = x.slice(i - a, i);
 			var after = x.slice(i + 1);
