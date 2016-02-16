@@ -71,13 +71,39 @@ Expression.prototype.compare = function(other) {
 };
 
 // Returns whether or not the first parameter of this is a variable scoped to this operation
-Expression.prototype.scoped = function() {
+Expression.prototype.introducesVariable = function() {
 	return this.operator === "exist" || this.operator === "all";
 };
 
-
-Expression.prototype.valid = function(data) {
-
+// Returns whether or not a given expression is notationally invalid.
+Expression.prototype.invalid = function(data) {
+	if (!data) {
+		data = {};
+	}
+	// Redeclaring a variable is invalid. e.g., "forall x, forall x, p(x)" since "x" becomes ambiguous
+	if (this.introducesVariable()) {
+		var name = this.args[0].name;
+		if (data[name]) {
+			return "variable '" + name + "' cannot be re-introduced";
+		}
+		data[name] = true;
+		for (var i = 1; i < this.args.length; i++) {
+			var reason = this.args[i].invalid(data);
+			if (reason) {
+				return reason;
+			}
+		}
+		data[name] = false;
+		return false;
+	}
+	// An expression is valid if its sub expressions are valid
+	for (var i = 0; i < this.args.length; i++) {
+		var reason = this.args[i].invalid(data);
+		if (reason) {
+			return reason;
+		}
+	}
+	return false;
 };
 
 // Sugar for creating Binary expressions
@@ -103,8 +129,8 @@ Atom.prototype.compare = function(other) {
 Atom.prototype.latex = function() {
 	return this.name;
 };
-Atom.prototype.valid = function(data) {
-	return true;
+Atom.prototype.invalid = function(data) {
+	return false;
 };
 
 // Match an expression against an expression pattern

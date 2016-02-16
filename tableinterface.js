@@ -13,6 +13,13 @@ function make(e, parent) {
 	return x;
 }
 
+// Returns whether line `x` may NOT reference line `y` in a given proof.
+function badReference(proof, x, y) {
+	if (y >= x) {
+		return "Statement " + (x+1) + " may only reference statements that come before it";
+	}
+}
+
 // Render a single line of the table (creating a <tr>)
 function RenderLine(proof, i) {
 	var line = make("tr", problem);
@@ -95,6 +102,12 @@ function RenderLine(proof, i) {
 			}
 			// Parse and render the expression (throws on failure)
 			proof[i].expression = Parse(proof[i].text);
+			// Check that the entered statement is notationally valid
+			var invalid = proof[i].expression.invalid();
+			if (invalid) {
+				proof[i].expression = "invalid";
+				throw "Statement is invalid: " + invalid;
+			}
 			katex.render( proof[i].expression.latex(), equation );
 			if (proof[i].reason === "") {
 				// Require the student enter a justification for their statement
@@ -110,14 +123,16 @@ function RenderLine(proof, i) {
 				// Pull the Expressions either represents into `args`
 				for (var j = 0; j < ax.args.length; j++) {
 					if (ax.args[j][0] === "@") {
-						var m = parseInt( proof[i].args[j] ) - 1;
-						// Verify the statement number is before this one (and positive, etc)
-						if (isFinite(m) && m === m << 0 && m >= 0) {
-							if (m >= i) {
-								throw "Statement must come before this";
-							}
-						} else {
-							throw "Statement number '" + proof[i].args[j] + "' is not a number";
+						var m = proof[i].args[j];
+						// Verify the statement number is a number:
+						var mi = parseInt(m);
+						if (!isFinite(mi) || mi < 0 || mi != m) {
+							throw "'" + m + "' is not a line number";
+						}
+						// Verify this statement may reference that statement:
+						var reason = badReference(proof, i, mi-1);
+						if (reason) {
+							throw reason;
 						}
 						args[j] = proof[m].expression;
 					} else {
