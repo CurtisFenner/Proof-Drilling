@@ -126,7 +126,7 @@ function RenderLine(proof, i) {
 						var m = proof[i].args[j];
 						// Verify the statement number is a number:
 						var mi = parseInt(m);
-						if (!isFinite(mi) || mi < 0 || mi != m) {
+						if (!isFinite(mi) || mi <= 0 || mi != m) {
 							throw "'" + m + "' is not a line number";
 						}
 						// Verify this statement may reference that statement:
@@ -134,7 +134,7 @@ function RenderLine(proof, i) {
 						if (reason) {
 							throw reason;
 						}
-						args[j] = proof[m].expression;
+						args[j] = proof[mi-1].expression;
 					} else {
 						var m = Parse( proof[i].args[j] );
 						args[j] = m;
