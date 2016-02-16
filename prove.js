@@ -12,6 +12,9 @@ function Expression(op, as) {
 	// Break up bound quantifiers: all_x( p(x) ) --> all(x, p(x))
 	if (this.operator.indexOf("_") >= 0) {
 		var d = this.operator.split("_");
+		if (d[1][0] === '@') {
+			return new Expression( d[0], [d[1].substr(1)].concat(as) );
+		}
 		return new Expression( d[0], [new Atom(d[1])].concat(as) );
 	}
 	this.args = as.slice(0);
@@ -97,7 +100,24 @@ function Match(pattern, object, eq, assignments) {
 	if (!assignments) {
 		assignments = {};
 	}
+	// pattern is an array. match each corresponding element.
+	if (pattern instanceof Array) {
+		if(!(object instanceof Array) || pattern.length !== object.length) {
+			return false;
+		}
+		for (var i = 0; i < pattern.length; i++) {
+			if (!Match(pattern[i], object[i], eq, assignments)) {
+				return false;
+			}
+		}
+		return assignments;
+	}
+	// pattern is a string -- a variable. it may be free,
+	// or already bound to an expression
 	if ("string" === typeof pattern) {
+		if (pattern.indexOf("@") >= 0) {
+			throw "Warning: bad pattern used with '" + pattern + "'";
+		}
 		if (assignments[pattern]) {
 			if (!eq( assignments[pattern] , object)) {
 				return false;
@@ -107,29 +127,21 @@ function Match(pattern, object, eq, assignments) {
 		}
 		return assignments;
 	}
+	// pattern is an atom. match exactly
 	if (pattern instanceof Atom) {
 		if (eq(pattern, object)) {
 			return assignments;
 		}
 		return false;
 	}
+	// pattern is an expression. match its operator and operands
 	if (pattern instanceof Expression) {
 		if (pattern.operator != object.operator) {
 			return false;
 		}
-		if (pattern.args.length != object.args.length) {
-			return false;
-		}
-		for (var i = 0; i < pattern.args.length; i++) {
-			var m = Match(pattern.args[i], object.args[i], eq, assignments);
-			if (!m) {
-				return m;
-			}
-		}
-		return assignments;
-	} else {
-		throw "Unknown pattern type.";
+		return Match(pattern.args, object.args, eq, assignments);
 	}
+	throw "Unknown pattern type.";
 }
 
 // Substitute an expression for another expression
@@ -163,6 +175,10 @@ function isLetter(c) {
 	return c.replace(/[@a-zA-Z]/, "") === "";
 }
 
+function isBracket(c) {
+	return c === "(" || c === ")";
+}
+
 // Classifies character c for the purposes of joining adjacent
 // characters into tokens (see `joined` and `Tokens`)
 function classify(c) {
@@ -174,6 +190,8 @@ function classify(c) {
 		return "digit";
 	} else if (isLetter(c)) {
 		return "letter";
+	} else if (isBracket(c)) {
+		return "bracket";
 	}
 	return "op";
 }
@@ -181,7 +199,7 @@ function classify(c) {
 // Returns whether character classes a and b (from `classify`)
 // are part of the same token when adjacent (see `Tokens`)
 function joined(a, b) {
-	if (a === "space" || b === "space") {
+	if (a === "space" || b === "space" || a == "bracket" || b == "bracket") {
 		return false;
 	}
 	if (a === "dot") {
@@ -373,7 +391,11 @@ function Parse(text) {
 			x = before.concat([obj]).concat(after);
 			i -= a;
 		} else {
-			x[i] = new Atom(t);
+			if (t[0] == "@") { // Bare strings. Useful for patterns in `Match`
+				x[i] = t.substr(1);
+			} else {
+				x[i] = new Atom(t);
+			}
 		}
 	}
 	if (x.length != 1) {

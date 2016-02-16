@@ -33,7 +33,7 @@ axioms.push({
 	name: "universal instantiation := b(y)",
 	args: ["@for all x, b(x)"],
 	test: function(exp, args) {
-		var forall = Match( Bin("all", "x", "predicate") , args[0], Same);
+		var forall = Match( Parse("all @x @predicate") , args[0], Same);
 		if (!forall) {
 			throw "Statement is not a for-all";
 		}
@@ -55,13 +55,10 @@ axioms.push({
 	name: "commutativity of '+' := u + v = v + u",
 	args: [],
 	test: function(exp) {
-		var t = Match( Bin("=", Bin("+", "u", "v"), Bin("+", "v", "u") ), exp, Same );
+		var t = Match( Parse("@u + @v = @v + @u"), exp, Same );
 		if (!t) {
 			throw "Not of the form u + v = v + u";
 		}
-	},
-	fun: function(args) {
-		return new Bin("=", new Bin("+", args[0], args[1]), new Bin("+", args[1], args[0]));
 	}
 });
 
@@ -69,22 +66,14 @@ axioms.push({
 axioms.push({
 	name: "transitivity of '=' := x = z",
 	args: ["@x = y", "@y = z"],
-	fun: function(args) {
-		var fail = false;
-
-		if (args[0].args.length !== 2 || args[1].args.length !== 2) {
-			fail = true;
+	test: function(exp, args) {
+		var M = Match(
+			[Parse("@x = @y"), Parse("@y = @z"), Parse("@x = @z")],
+			[args[0], args[1], exp],
+			Same);
+		if (!M) {
+			throw "Does not fit pattern x=y, y=z => x=z";
 		}
-		else if (args[0].operator !== "=" || args[1].operator !== "=") {
-			fail = true;
-		}
-		else if (!Same(args[0].args[1], args[1].args[0])) {
-			fail = true;
-		}
-		if (fail) {
-			throw "Does not fit pattern x=y, y=z";
-		}
-		return new Bin("=", args[0].args[0], args[1].args[1]);
 	}
 });
 
@@ -92,12 +81,10 @@ axioms.push({
 axioms.push({
 	name: "symmetry of '=' := y = x",
 	args: ["@x = y"],
-	fun: function(args) {
-		var t = Match( new Bin("=", "x", "y"), args[0], Same );
-		if (!t) {
-			throw "Does not fit pattern a = b"
+	test: function(exp, args) {
+		if (!Match([Parse("@x = @y"), Parse("@y = @x")], [exp, args[0]], Same)) {
+			throw "Does not fit pattern x = y"
 		}
-		return new Bin("=", t.y, t.x);
 	}
 });
 
@@ -106,8 +93,8 @@ axioms.push({
 
 // Hypothesis (givens)
 var hypotheses = [];
-hypotheses.push( Parse("all x a + x = x") );
-hypotheses.push( Parse("all x b + x = x") );
+hypotheses.push( Parse("(all x)(a + x = x)") );
+hypotheses.push( Parse("(all x)(b + x = x)") );
 
 // Add hypotheses lines to proof:
 var lines = [];
