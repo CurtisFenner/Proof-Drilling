@@ -88,6 +88,7 @@ var operatorPrecedence = {
 	"=": 30,
 	"and": 20,
 	"or": 10,
+	"->": 9,
 	"all": 5, // all, exist not actually used.
 	"exist": 5,
 	",": 1,

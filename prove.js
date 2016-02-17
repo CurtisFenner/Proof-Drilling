@@ -24,6 +24,7 @@ Expression.prototype.latex = function(parent) {
 	var latexMap = {
 		"and": "\\wedge",
 		"or": "\\vee",
+		"->": "\\Rightarrow"
 	}
 	var me = getPrecedence(this.operator);
 	var s;
