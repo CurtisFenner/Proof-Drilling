@@ -130,6 +130,7 @@ Atom.prototype.latex = function() {
 	return this.name;
 };
 Atom.prototype.invalid = function(data) {
+	// TODO: Validate based on usage & name (a -- o for constants, p -- z for scoped varibles)
 	return false;
 };
 
