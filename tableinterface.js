@@ -26,6 +26,7 @@ function RenderLine(proof, i) {
 	var equation = make("td", line);
 	equation.className = "left";
 	var num = make("td", line);
+	num.className = "right";
 	var box = make("td", line);
 	var reason = make("td", line);
 	var argCells = [];
