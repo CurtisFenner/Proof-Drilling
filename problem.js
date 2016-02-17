@@ -90,17 +90,28 @@ axioms.push({
 
 ///////////////////////////////////////////////////////////////////////////////
 
+// Natural proof axioms:
+
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 // Hypothesis (givens)
 var hypotheses = [];
-hypotheses.push( Parse("(all x)(a + x = x)") );
-hypotheses.push( Parse("(all x)(b + x = x)") );
+//hypotheses.push( Parse("(all x)(a + x = x)") );
+//hypotheses.push( Parse("(all x)(b + x = x)") );
+
+// (4)
+hypotheses.push( Parse("all y, H(y,y)") );
+hypotheses.push( Parse("exist z, B(z)") );
 
 // Add hypotheses lines to proof:
 var lines = [];
 for (var i = 0; i < hypotheses.length; i++) {
 	lines[i] = { expression: hypotheses[i], text: "x", reason: "hypothesis", args: ["", "", ""] };
 }
+// Set up main branch of proof:
+lines.history = [];
 
 // Add empty lines to proof:
 for (var i = 0; i < 13; i++) {

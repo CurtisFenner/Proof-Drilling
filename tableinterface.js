@@ -24,6 +24,7 @@ function badReference(proof, x, y) {
 function RenderLine(proof, i) {
 	var line = make("tr", problem);
 	var equation = make("td", line);
+	equation.className = "left";
 	var num = make("td", line);
 	var box = make("td", line);
 	var reason = make("td", line);
@@ -51,6 +52,7 @@ function RenderLine(proof, i) {
 			argInputs[j].disabled = true;
 		}
 		if (!ax) {
+			// No justification was entered
 			for (var j = 0; j < argInputs.length; j++) {
 				argInputs[j].disabled = true;
 			}
@@ -143,7 +145,7 @@ function RenderLine(proof, i) {
 				// `ax.test` is a friendlier function which infers expressions.
 				// If it's provided for this axiom, use it!
 				if (ax.test) {
-					var okay = ax.test(proof[i].expression, args);
+					var okay = ax.test(proof[i].expression, args, flattened(proof.history));
 					// throws on failure
 				} else {
 					// Otherwise, compute (given arguments, but NOT student statement)
