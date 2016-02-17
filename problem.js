@@ -92,6 +92,24 @@ axioms.push({
 
 // Natural proof axioms:
 
+axioms.push({
+	name: "Suppose",
+	args: [],
+	test: function(exp, args) {
+		return true; // Everything is okay.
+	},
+	opens: true,
+});
+
+
+axioms.push({
+	name: "Conclude",
+	args: [],
+	test: function(exp, args) {
+		// TODO: Check appropriately
+	},
+	closes: true,
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -110,8 +128,6 @@ var lines = [];
 for (var i = 0; i < hypotheses.length; i++) {
 	lines[i] = { expression: hypotheses[i], text: "x", reason: "hypothesis", args: ["", "", ""] };
 }
-// Set up main branch of proof:
-lines.history = [];
 
 // Add empty lines to proof:
 for (var i = 0; i < 13; i++) {

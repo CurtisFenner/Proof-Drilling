@@ -143,10 +143,25 @@ function RenderLine(proof, i) {
 						args[j] = m;
 					}
 				}
+				// Open a sub-proof:
+				if (ax.opens) {
+					var parent = proof.scope;
+					proof.scope = [];
+					proof.scope.parent = parent;
+					parent.push(proof.scope);
+				}
+				var closed;
+				// Close a sub-proof:
+				if (ax.closes) {
+					proof.scope = proof.scope.parent;
+					closed = proof.scope.pop();
+				}
+				// Include in history the current expression:
+				proof.scope.push(proof[i].expression);
 				// `ax.test` is a friendlier function which infers expressions.
 				// If it's provided for this axiom, use it!
 				if (ax.test) {
-					var okay = ax.test(proof[i].expression, args, flattened(proof.history));
+					var okay = ax.test(proof[i].expression, args, flattened(proof.history), closed);
 					// throws on failure
 				} else {
 					// Otherwise, compute (given arguments, but NOT student statement)
@@ -183,11 +198,16 @@ function RenderLine(proof, i) {
 
 // Render all of the lines of the current proof
 function Render(proof) {
+	// Clear HTML table:
 	while (problem.firstChild) {
 		problem.removeChild(problem.firstChild);
 	}
+	// Set up main branch of proof:
+	lines.history = [];
+	lines.scope = lines.history; // initial scope is global
 	for (var i = 0; i < proof.length; i++) {
 		RenderLine(proof, i);
+		console.log( Show(proof.history) );
 	}
 }
 
