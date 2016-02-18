@@ -28,12 +28,48 @@ var axioms = [];
 //       what the student entered.
 
 
+
+// Define Existential Instantiation
+axioms.push({
+	name: "Existential Instantiation",
+	args: ["@there exists"],
+	test: function(exp, args, history) {
+		var exists = Match(Parse("exist @x @predicate"), args[0], Same);
+		if (!exists) {
+			throw "Statement is not a there-exists";
+		}
+		// Test whether or not this is a real instantiation:
+		var pattern = Substitute(exists.x, "x", exists.predicate);
+		var f = Match(pattern, exp, Same);
+		if (f && f.x) {
+			// Check that it was instantiated with a name:
+			if (f.x instanceof Atom) {
+				// Check that this name is new:
+				console.log(history);
+				for (var i = 0; i < history.length; i++) {
+					console.log(history[i].latex(), "???", f.x.name);
+					if (history[i].uses(f.x.name)) {
+						throw "You cannot instantiate with a name that has been used before.";
+					}
+				}
+				// This is a valid instantiation
+				return true;
+			} else {
+				throw "You can only instantiate a there-exists statement with a variable, not an expression like " + f.x;
+			}
+		} else {
+			throw "Not a valid instantiation of " + exists.predicate;
+		}
+	},
+})
+
+
 // Define Universal Instantiation
 axioms.push({
 	name: "universal instantiation := b(y)",
 	args: ["@for all x, b(x)"],
 	test: function(exp, args) {
-		var forall = Match( Parse("all @x @predicate") , args[0], Same);
+		var forall = Match(Parse("all @x @predicate"), args[0], Same);
 		if (!forall) {
 			throw "Statement is not a for-all";
 		}
@@ -87,6 +123,7 @@ axioms.push({
 		}
 	}
 });
+
 
 ///////////////////////////////////////////////////////////////////////////////
 

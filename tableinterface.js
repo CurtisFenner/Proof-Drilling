@@ -88,6 +88,7 @@ function RenderLine(proof, i) {
 		s.disabled = true;
 		e.value = proof[i].expression.toString().replace(/@/g, "");
 		katex.render( proof[i].expression.latex(), equation );
+		proof.scope.push( proof[i].expression );
 	} else {
 		for (var j = 0; j < axioms.length; j++) {
 			var o = make("option", s);
@@ -161,7 +162,9 @@ function RenderLine(proof, i) {
 				// `ax.test` is a friendlier function which infers expressions.
 				// If it's provided for this axiom, use it!
 				if (ax.test) {
-					var okay = ax.test(proof[i].expression, args, flattened(proof.history), closed);
+					var hist = flattened(proof.history);
+					hist = hist.slice(0, hist.length-1);
+					var okay = ax.test(proof[i].expression, args, hist, closed);
 					// throws on failure
 				} else {
 					// Otherwise, compute (given arguments, but NOT student statement)
@@ -207,7 +210,6 @@ function Render(proof) {
 	lines.scope = lines.history; // initial scope is global
 	for (var i = 0; i < proof.length; i++) {
 		RenderLine(proof, i);
-		console.log( Show(proof.history) );
 	}
 }
 

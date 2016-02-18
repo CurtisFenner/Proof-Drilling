@@ -1,3 +1,16 @@
+function Show(a) {
+    if (a.latex) {
+        return a.latex();
+    } else {
+        if (a instanceof Array) {
+            return "[" + a.map(function(x) {return Show(x)}).join(", ") + "]";
+        } else {
+            return JSON.stringify(a);
+        }
+    }
+}
+
+
 // Source: http://stackoverflow.com/questions/27266550/how-to-flatten-nested-array-in-javascript
 // 16 February 2016
 // This is done in a linear time O(n) without recursion

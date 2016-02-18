@@ -107,6 +107,14 @@ Expression.prototype.invalid = function(data) {
 	return false;
 };
 
+Expression.prototype.uses = function(name) {
+	for (var i = 0; i < this.args.length; i++) {
+		if (this.args[i].uses(name)) {
+			return true;
+		}
+	}
+};
+
 // Sugar for creating Binary expressions
 function Bin(op, x, y) {
 	return new Expression(op, [x, y]);
@@ -133,6 +141,9 @@ Atom.prototype.latex = function() {
 Atom.prototype.invalid = function(data) {
 	// TODO: Validate based on usage & name (a -- o for constants, p -- z for scoped varibles)
 	return false;
+};
+Atom.prototype.uses = function(name) {
+	return this.name === name;
 };
 
 // Match an expression against an expression pattern
