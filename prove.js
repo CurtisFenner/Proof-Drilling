@@ -60,6 +60,9 @@ Expression.prototype.toString = function() {
 // Compare this expression precisely to `other`.
 // Operator and all operands must be equal.
 Expression.prototype.compare = function(other) {
+	if (!other) {
+		return false;
+	}
 	if (this.operator !== other.operator || this.args.length !== other.args.length) {
 		return false;
 	}

@@ -48,7 +48,7 @@ function UseNaturalDeduction(axioms) {
 			}
 			for (var i = 0; i < history.length; i++) {
 				if (history[i].assumption && history[i].uses(f.x.name)) {
-					throw "'" + f.x + "' must not appear in any assumptions";
+					throw "'" + f.x + "' must not appear in any assumptions, but appears in statement " + (i+1);
 				}
 			}
 		}
@@ -117,6 +117,9 @@ function UseNaturalDeduction(axioms) {
 			}
 			var pattern = Substitute(exists.x, "x", exists.predicate);
 			var v = Match(pattern, exp, Same);
+			if (!v || !v.x) {
+				throw "Did not match expected pattern " + pattern;
+			}
 			if (!(v.x instanceof Atom)) {
 				throw "Expected a constant name but got '" + v.x + "'";
 			}

@@ -126,6 +126,9 @@ function RenderLine(proof, i) {
 			if (ax && ax.opens) {
 				depth++;
 			}
+			if (ax && ax.closes) {
+				depth--;
+			}
 			var pipes = INDENT.repeat(depth);
 			katex.render(pipes + proof[i].expression.latex(), equation);
 			if (proof[i].reason === "") {
@@ -205,6 +208,7 @@ function RenderLine(proof, i) {
 			};
 		})(j);
 	}
+	return errors.textContent != "";
 }
 
 // Render all of the lines of the current proof
@@ -216,8 +220,43 @@ function Render(proof) {
 	// Set up main branch of proof:
 	lines.history = [];
 	lines.scope = lines.history; // initial scope is global
+	var problem = false;
+	var solved = false;
+	var other = false;
 	for (var i = 0; i < proof.length; i++) {
-		RenderLine(proof, i);
+		problem = RenderLine(proof, i) || problem;
+		if (Same(solution, proof[i].expression) && !proof.scope.parent) {
+			solved = true;
+		}
+	}
+	if (proof.scope.parent) {
+		other = "Your proof has not ended all its subproofs";
+	}
+	var YES = "[O]";
+	var NO = "[X]";
+	console.log(YES, NO);
+	var text = "";
+	if (problem) {
+		text += "" + NO + " Your proof contains errors";
+	} else {
+		text += "" + YES + " Your proof does not contain errors";
+	}
+	if (solved) {
+		text += "<br>" + YES + " You conclude ";
+	} else {
+		text += "<br>" + NO + " You have not yet proved ";
+	}
+	if (other) {
+		text += "<br>" + NO + " " + other;
+	}
+	solutionbox.innerHTML = text;
+	var code = document.createElement("span");
+	solutionbox.appendChild(code);
+	katex.render(solution.latex(), code);
+	if (solved && !problem && !other) {
+		solutionbox.style.background = "#9FA";
+	} else {
+		solutionbox.style.background = "#FAA";
 	}
 }
 

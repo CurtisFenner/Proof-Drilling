@@ -1,13 +1,14 @@
 <!doctype html>
 <html>
 <head>
+	<meta charset="utf-8">
 	<title>Prove</title>
 	<link rel="stylesheet" href="katex.css">
 	<script src="polyfills.js"></script>
 	<script src="katex.js"></script>
 	<script src="parse.js"></script>
 	<script src="prove.js"></script>
-	<script src="tableinterface.js"></script>
+	<script src="tableinterface.js" charset="utf-8"></script>
 	<script src="library.js"></script>
 	<script src="problempre.js"></script>
 	<style>
@@ -58,9 +59,11 @@
 	</style>
 </head>
 <body>
-	<script src="problems/logicp4.js"></script>
+	<script src="problems/logicp4.js" charset="utf-8"></script>
 	<p id="problemdescription"></p>
 	<table border="1" id="prooftable"></table>
 	<button id="recheck">Recheck</button>
-	<script src="problempost.js"></script>
+	<br>
+	<p id="solutionbox"></p>
+	<script src="problempost.js" charset="utf-8"></script>
 </body>
