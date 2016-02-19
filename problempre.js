@@ -1,4 +1,4 @@
 var hypotheses = [];
 var axioms = [];
-var description = "Problem Description Here";
+var description = "";
 var solution = null;

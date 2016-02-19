@@ -7,4 +7,3 @@ hypotheses = [
 UseNaturalDeduction(axioms);
 
 solution = "exist x, B(x) and H(x, x)";
-description = "Prove $" + solution + "$ given $" + hypotheses.join("$, $") + "$.";

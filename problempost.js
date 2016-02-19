@@ -7,7 +7,7 @@ if (axioms.length === 0) {
 	description += "    /PROBLEM DID NOT SPECIFY ANY AXIOMS/"
 }
 
-problemdescription.textContent = description;
+problemdescription.textContent = description || ("Prove $" + solution + "$ given $" + hypotheses.join("$, $") + "$.");
 
 // Add hypotheses lines to proof:
 var lines = hypotheses.map(Parse).map(function(e) {
