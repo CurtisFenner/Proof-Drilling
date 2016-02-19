@@ -177,21 +177,11 @@ function RenderLine(proof, i) {
 						args[j] = m;
 					}
 				}
-				// `ax.test` is a friendlier function which infers expressions.
-				// If it's provided for this axiom, use it!
-				if (ax.test) {
-					var hist = flattened(proof.history);
-					hist = hist.slice(0, hist.length-1);
-					var okay = ax.test(proof[i].expression, args, hist, closed);
-					// throws on failure
-				} else {
-					// Otherwise, compute (given arguments, but NOT student statement)
-					// what you expect, and check that they match.
-					var predicted = ax.fun(args);
-					if (!Same(proof[i].expression, predicted)) {
-						throw "This statement does not follow.\nExpected: " + predicted;
-					}
-				}
+				//  Use ax.test to check answers
+				var hist = flattened(proof.history);
+				hist = hist.slice(0, hist.length-1);
+				var okay = ax.test(proof[i].expression, args, hist, closed);
+				// throws on failure
 			}
 		} catch (error) {
 			// Show why this line is wrong
@@ -214,7 +204,6 @@ function RenderLine(proof, i) {
 			};
 		})(j);
 	}
-	//
 }
 
 // Render all of the lines of the current proof
