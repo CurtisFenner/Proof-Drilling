@@ -20,6 +20,9 @@ function badReference(proof, x, y) {
 	}
 }
 
+
+var INDENT = "\\Big|\\;\\;";
+
 // Render a single line of the table (creating a <tr>)
 function RenderLine(proof, i) {
 	var line = make("tr", problem);
@@ -87,7 +90,7 @@ function RenderLine(proof, i) {
 		x.textContent = "given";
 		s.disabled = true;
 		e.value = proof[i].expression.toString().replace(/@/g, "");
-		katex.render( proof[i].expression.latex(), equation );
+		katex.render( INDENT + proof[i].expression.latex(), equation );
 		proof.scope.push( proof[i].expression );
 		proof[i].scope = proof.scope;
 		proof[i].expression.assumption = true;
@@ -114,13 +117,21 @@ function RenderLine(proof, i) {
 				proof[i].expression = "invalid";
 				throw "Statement is invalid: " + invalid;
 			}
-			katex.render( proof[i].expression.latex(), equation );
+			var depth = 0;
+			for (var c = proof.scope; c; c = c.parent) {
+				depth++;
+			}
+			// Get the definition of the justification they picked.
+			var ax = axioms[ s.value ];
+			if (ax && ax.opens) {
+				depth++;
+			}
+			var pipes = INDENT.repeat(depth);
+			katex.render(pipes + proof[i].expression.latex(), equation);
 			if (proof[i].reason === "") {
 				// Require the student enter a justification for their statement
 				throw "Must enter justification";
 			}
-			// Get the definition of the justification they picked.
-			var ax = axioms[ s.value ];
 			var args = [];
 			if (ax) {
 				// Open a sub-proof:
