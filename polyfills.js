@@ -11,6 +11,53 @@ function Show(a) {
 }
 
 
+// Source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/repeat
+// 18 February 2016
+if (!String.prototype.repeat) {
+  String.prototype.repeat = function(count) {
+    'use strict';
+    if (this == null) {
+      throw new TypeError('can\'t convert ' + this + ' to object');
+    }
+    var str = '' + this;
+    count = +count;
+    if (count != count) {
+      count = 0;
+    }
+    if (count < 0) {
+      throw new RangeError('repeat count must be non-negative');
+    }
+    if (count == Infinity) {
+      throw new RangeError('repeat count must be less than infinity');
+    }
+    count = Math.floor(count);
+    if (str.length == 0 || count == 0) {
+      return '';
+    }
+    // Ensuring count is a 31-bit integer allows us to heavily optimize the
+    // main part. But anyway, most current (August 2014) browsers can't handle
+    // strings 1 << 28 chars or longer, so:
+    if (str.length * count >= 1 << 28) {
+      throw new RangeError('repeat count must not overflow maximum string size');
+    }
+    var rpt = '';
+    for (;;) {
+      if ((count & 1) == 1) {
+        rpt += str;
+      }
+      count >>>= 1;
+      if (count == 0) {
+        break;
+      }
+      str += str;
+    }
+    // Could we try:
+    // return Array(count + 1).join(this);
+    return rpt;
+  }
+}
+
+
 // Source: http://stackoverflow.com/questions/27266550/how-to-flatten-nested-array-in-javascript
 // 16 February 2016
 // This is done in a linear time O(n) without recursion
@@ -60,11 +107,11 @@ if (!Array.prototype.map) {
       throw new TypeError(' this is null or not defined');
     }
 
-    // 1. Let O be the result of calling ToObject passing the |this| 
+    // 1. Let O be the result of calling ToObject passing the |this|
     //    value as the argument.
     var O = Object(this);
 
-    // 2. Let lenValue be the result of calling the Get internal 
+    // 2. Let lenValue be the result of calling the Get internal
     //    method of O with the argument "length".
     // 3. Let len be ToUint32(lenValue).
     var len = O.length >>> 0;
@@ -80,8 +127,8 @@ if (!Array.prototype.map) {
       T = thisArg;
     }
 
-    // 6. Let A be a new array created as if by the expression new Array(len) 
-    //    where Array is the standard built-in constructor with that name and 
+    // 6. Let A be a new array created as if by the expression new Array(len)
+    //    where Array is the standard built-in constructor with that name and
     //    len is the value of len.
     A = new Array(len);
 
@@ -95,18 +142,18 @@ if (!Array.prototype.map) {
 
       // a. Let Pk be ToString(k).
       //   This is implicit for LHS operands of the in operator
-      // b. Let kPresent be the result of calling the HasProperty internal 
+      // b. Let kPresent be the result of calling the HasProperty internal
       //    method of O with argument Pk.
       //   This step can be combined with c
       // c. If kPresent is true, then
       if (k in O) {
 
-        // i. Let kValue be the result of calling the Get internal 
+        // i. Let kValue be the result of calling the Get internal
         //    method of O with argument Pk.
         kValue = O[k];
 
-        // ii. Let mappedValue be the result of calling the Call internal 
-        //     method of callback with T as the this value and argument 
+        // ii. Let mappedValue be the result of calling the Call internal
+        //     method of callback with T as the this value and argument
         //     list containing kValue, k, and O.
         mappedValue = callback.call(T, kValue, k, O);
 

@@ -234,7 +234,6 @@ function Render(proof) {
 	}
 	var YES = "[O]";
 	var NO = "[X]";
-	console.log(YES, NO);
 	var text = "";
 	if (problem) {
 		text += "" + NO + " Your proof contains errors";
