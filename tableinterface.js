@@ -89,6 +89,7 @@ function RenderLine(proof, i) {
 		e.value = proof[i].expression.toString().replace(/@/g, "");
 		katex.render( proof[i].expression.latex(), equation );
 		proof.scope.push( proof[i].expression );
+		proof[i].expression.assumption = true;
 	} else {
 		for (var j = 0; j < axioms.length; j++) {
 			var o = make("option", s);
@@ -121,6 +122,22 @@ function RenderLine(proof, i) {
 			var ax = axioms[ s.value ];
 			var args = [];
 			if (ax) {
+				// Open a sub-proof:
+				if (ax.opens) {
+					proof[i].expression.assumption = true;
+					var parent = proof.scope;
+					proof.scope = [];
+					proof.scope.parent = parent;
+					parent.push(proof.scope);
+				}
+				var closed;
+				// Close a sub-proof:
+				if (ax.closes) {
+					proof.scope = proof.scope.parent;
+					closed = proof.scope.pop();
+				}
+				// Include in history the current expression:
+				proof.scope.push(proof[i].expression);
 				// If the justification field isn't blank...
 				// Consider all of the arguments the axiom requires.
 				// They may be previous statements, or expressions.
@@ -144,21 +161,6 @@ function RenderLine(proof, i) {
 						args[j] = m;
 					}
 				}
-				// Open a sub-proof:
-				if (ax.opens) {
-					var parent = proof.scope;
-					proof.scope = [];
-					proof.scope.parent = parent;
-					parent.push(proof.scope);
-				}
-				var closed;
-				// Close a sub-proof:
-				if (ax.closes) {
-					proof.scope = proof.scope.parent;
-					closed = proof.scope.pop();
-				}
-				// Include in history the current expression:
-				proof.scope.push(proof[i].expression);
 				// `ax.test` is a friendlier function which infers expressions.
 				// If it's provided for this axiom, use it!
 				if (ax.test) {
