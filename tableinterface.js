@@ -89,6 +89,7 @@ function RenderLine(proof, i) {
 		e.value = proof[i].expression.toString().replace(/@/g, "");
 		katex.render( proof[i].expression.latex(), equation );
 		proof.scope.push( proof[i].expression );
+		proof[i].scope = proof.scope;
 		proof[i].expression.assumption = true;
 	} else {
 		for (var j = 0; j < axioms.length; j++) {
@@ -133,11 +134,15 @@ function RenderLine(proof, i) {
 				var closed;
 				// Close a sub-proof:
 				if (ax.closes) {
+					if (!proof.scope.parent) {
+						throw "No open sub-proof";
+					}
 					proof.scope = proof.scope.parent;
 					closed = proof.scope.pop();
 				}
 				// Include in history the current expression:
 				proof.scope.push(proof[i].expression);
+				proof[i].expression.scope = proof.scope;
 				// If the justification field isn't blank...
 				// Consider all of the arguments the axiom requires.
 				// They may be previous statements, or expressions.

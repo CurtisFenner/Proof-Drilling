@@ -16,6 +16,7 @@ var axioms = [];
 
 ////////////////////////////////////////////////////////////////////////////////
 
+
 // Define Universal Instantiation
 axioms.push({
 	name: "Universal Elimination",
@@ -38,7 +39,6 @@ axioms.push({
 axioms.push({
 	name: "Universal Introduction",
 	args: ["@predicate"],
-	opens: true, // Creates a subproof and assumption.
 	test: function(exp, args, history) {
 		var forall = Match(Parse("all @x @predicate"), exp, Same);
 		if (!forall) {
@@ -53,9 +53,7 @@ axioms.push({
 			throw "Instance must be a constant; '" + f.x + "' is not a constant";
 		}
 		for (var i = 0; i < history.length; i++) {
-			var d = {};
-			d[f.x.name] = true;
-			if (history[i].assumption && history[i].invalid(d) ) {
+			if (history[i].assumption && history[i].uses(f.x.name)) {
 				throw "'" + f.x + "' must not appear in any assumptions";
 			}
 		}
@@ -115,7 +113,41 @@ axioms.push({
 // Existential Elimination.
 // Opens a sub-proof that allows conclusion of "there exists"
 axioms.push({
-	
+	name: "Existential Elimination (Begin)",
+	args: ["@exists"],
+	opens: true,
+	test: function(exp, args, history) {
+		var exists = Match(Parse("exist @x, @predicate"), args[0], Same);
+		if (!exists) {
+			throw "Expected a there-exists statement";
+		}
+		var pattern = Substitute(exists.x, "x", exists.predicate);
+		var v = Match(pattern, exp, Same);
+		if (!(v.x instanceof Atom)) {
+			throw "Expected a constant name but got '" + v.x + "'";
+		}
+		// Check that 'v' is not used anywhere in the history
+		for (var i = 0; i < history.length; i++) {
+			if (history[i].uses(v.x.name)) {
+				throw "Statement " + (i+1) + " uses variable '" + v.x.name + "', so it cannot be used as the name of a constant.";
+			}
+		}
+		exp.supposed = v.x.name;
+	}
+});
+
+axioms.push({
+	name: "Existential Elimination (End)",
+	closes: true,
+	args: [],
+	test: function(exp, args, history, scope) {
+		if (!Same(exp, scope[scope.length-1])) {
+			throw "Must conclude the previous statement";
+		}
+		if (exp.uses(scope[0].supposed)) {
+			throw "Must not contain the constant '" + scope[0].supposed + "'";
+		}
+	}
 });
 
 ////////////////////////////////////////////////////////////////////////////////

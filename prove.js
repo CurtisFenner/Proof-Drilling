@@ -77,7 +77,7 @@ Expression.prototype.introducesVariable = function() {
 };
 
 // Returns whether or not a given expression is notationally invalid.
-Expression.prototype.invalid = function(data) {
+Expression.prototype.invalid = function invalid(data) {
 	if (!data) {
 		data = {};
 	}
