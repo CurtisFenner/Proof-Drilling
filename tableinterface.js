@@ -139,6 +139,7 @@ function RenderLine(proof, i) {
 					proof[i].expression.assumption = true;
 					var parent = proof.scope;
 					proof.scope = [];
+					proof.scope.concludes = ax.concludes;
 					proof.scope.parent = parent;
 					parent.push(proof.scope);
 				}
@@ -220,13 +221,13 @@ function Render(proof) {
 	}
 }
 
-// Show the initial state of the table with hypotheses
-// (hypotheses loaded in "problem.js")
-Render(lines);
-
-// Recheck answers when the 'recheck' button is pressed
-recheck.onclick = function() {
+function Setup(lines) {
+	// Show the initial state of the table with hypotheses
+	// (hypotheses loaded in "problem.js")
 	Render(lines);
-};
 
-
+	// Recheck answers when the 'recheck' button is pressed
+	recheck.onclick = function() {
+		Render(lines);
+	};
+}
