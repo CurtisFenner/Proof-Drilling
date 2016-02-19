@@ -25,7 +25,7 @@ var INDENT = "\\Big|\\;\\;";
 
 // Render a single line of the table (creating a <tr>)
 function RenderLine(proof, i) {
-	var line = make("tr", problem);
+	var line = make("tr", prooftable);
 	var equation = make("td", line);
 	equation.className = "left";
 	var num = make("td", line);
@@ -210,8 +210,8 @@ function RenderLine(proof, i) {
 // Render all of the lines of the current proof
 function Render(proof) {
 	// Clear HTML table:
-	while (problem.firstChild) {
-		problem.removeChild(problem.firstChild);
+	while (prooftable.firstChild) {
+		prooftable.removeChild(prooftable.firstChild);
 	}
 	// Set up main branch of proof:
 	lines.history = [];
@@ -223,7 +223,6 @@ function Render(proof) {
 
 function Setup(lines) {
 	// Show the initial state of the table with hypotheses
-	// (hypotheses loaded in "problem.js")
 	Render(lines);
 
 	// Recheck answers when the 'recheck' button is pressed
