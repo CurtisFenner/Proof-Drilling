@@ -49,8 +49,14 @@ Expression.prototype.latex = function(parent) {
 };
 // Produce a human-readable string representing this expression
 Expression.prototype.toString = function() {
+	if (this.operator === ".") {
+		return this.args[0] + "(" + this.args[1] + ")";
+	}
+	if (this.operator === ",") {
+		return this.args.join(", ");
+	}
 	if (this.operator === "all" || this.operator === "exist") {
-		return "(" + this.operator + " " + this.args[0] + ")" + this.args[1];
+		return "(" + this.operator + " " + this.args[0] + ")(" + this.args[1] + ")";
 	} else if (this.args.length === 1) {
 		return this.operator + this.args[0];
 	} else {
