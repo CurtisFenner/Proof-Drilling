@@ -81,6 +81,7 @@ function Tokens(text) {
 var operatorPrecedence = {
 	".": 100,
 	"~": 90,
+	"-u": 90,
 	"*": 75,
 	"/": 75,
 	"+": 50,
@@ -96,7 +97,8 @@ var operatorPrecedence = {
 
 // Defines the arity of non-binary operators
 var operatorArity = {
-	"~": 1
+	"~": 1,
+	"-u": 1,
 };
 
 // Defines whether operators are right-associative
@@ -154,6 +156,13 @@ function FixTokens(x) {
 			r.splice(i+1, 1);
 			r.splice(i-1, 1);
 			//r = r.slice(0, i - 1).concat([ r[i] ]).concat(r.slice(i + 2));
+		}
+	}
+	for (var i = 0; i < r.length; i++) {
+		if (i === 0 || getPrecedence(r[i-1]) || r[i-1] === "(") {
+			if (r[i] === "-") {
+				r[i] = "-u";
+			}
 		}
 	}
 	return r;
@@ -215,6 +224,7 @@ function ParseShunting(tokens) {
 // Throws on invalid input
 function Parse(text) {
 	var x = ParseShunting( Tokens(text) );
+	console.log(x);
 	for (var i = 0; i < x.length; i++) {
 		var t = x[i];
 		if (getPrecedence(t)) {

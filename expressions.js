@@ -34,6 +34,8 @@ Expression.prototype.latex = function(parent) {
 		s = "(\\exists " + this.args[0].latex(me) + ") (" + this.args[1].latex(me) + ")";
 	} else if (this.operator === "~") {
 		s = "\\neg " + this.args[0].latex(me);
+	} else if (this.operator === "-u") {
+		s = "-" + this.args[0].latex(me);
 	} else if (this.operator === ".") {
 		return this.args[0].latex(-1) + "(" + this.args[1].latex(-1) + ")";
 	} else {
@@ -58,6 +60,7 @@ Expression.prototype.toString = function() {
 	if (this.operator === "all" || this.operator === "exist") {
 		return "(" + this.operator + " " + this.args[0] + ")(" + this.args[1] + ")";
 	} else if (this.args.length === 1) {
+		var o = this.operator.substr(-1)=="u" ? this.operator.substr(0,this.operator.length-1) : this.operator;
 		return this.operator + this.args[0];
 	} else {
 		return "(" + this.args.join(" " + this.operator + " ") + ")";
