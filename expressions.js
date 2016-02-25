@@ -124,7 +124,7 @@ Expression.prototype.normalize = function normalizeExpression(p) {
 	var as = this.args.map(function(x){return x.normalize(p);});
 	var x = [];
 	for (var i = 0; i < as.length; i++) {
-		if (p.flat[this.operator] && args[i].operator === this.operator) {
+		if (p.flat[this.operator] && as[i].operator === this.operator) {
 			x = x.concat(as[i].args);
 		} else {
 			x.push(as[i]);

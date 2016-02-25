@@ -64,7 +64,7 @@
 	var problem = window.location.href.split("problem=")[1];
 	if (!problem) {
 		problem = "zero";
-		console.log("Implicitly set problem to " + zero);
+		console.log("Implicitly set problem to " + problem);
 	}
 	var scr = document.createElement("script");
 	scr.src = "problems/" + problem + ".js";
