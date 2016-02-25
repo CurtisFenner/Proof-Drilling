@@ -80,6 +80,7 @@ function RenderLine(proof, i) {
 	var e = make("input", box);
 	e.disabled = i < hypotheses.length;
 	e.value = proof[i].text;
+	e.className = "long";
 	e.oninput = function() {
 		proof[i].text = e.value;
 	};
