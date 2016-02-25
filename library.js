@@ -9,6 +9,124 @@ function Same(a, b) {
 	return a.compare(b, Same);
 }
 
+function UseEqualityProperty(axioms, op, name) {
+	axioms.push({
+		name: name + " property of equality",
+		args: ["@equality"],
+		test: function(exp, args) {
+			var eq = Match(Parse("@a = @b"), args[0], Same);
+			if (!eq) {
+				throw "Expression " + args[0] + " is not of the form a = b";
+			}
+			var left = Bin(op, eq.a, "x");
+			var right = Bin(op, eq.b, "x");
+			var pattern = Bin(op, left, right);
+			if (!Match(pattern, exp, Same)) {
+				throw exp + " is not of the form " + pattern;
+			}
+		}
+	});
+}
+
+// Add Reflexicity and Additive Property of Equality for an operation (usually =)
+function UseReflexive(axioms, op) {
+	op = op || "=";
+	axioms.push({
+		name: "Reflexivity of " + op,
+		args: [],
+		test: function(exp) {
+			if (Match(Parse("@a " + op + " @a"), exp, Same)) {
+				return false;
+			}
+			throw exp + " is not of the form a " + op + " a";
+		}
+	});
+}
+
+// Add a rule for the associativity of an operation
+function UseAssociativity(axioms, op) {
+	if (!op) {
+		throw "Must say operand in UseAssociativity";
+	}
+	axioms.push({
+		name: "Associativity of " + op,
+		args: [],
+		test: function(exp) {
+			var pattern = "(@a" + op + " @b) " + op + " @c=@a " + op + " (@b " + op + " @c)";
+			if (Match(Parse(pattern), exp, Same)) {
+				return false;
+			}
+			throw exp + " is not of the form (a+b)+c=a+(b+c)".replace(/\+/g, op);
+		}
+	});
+}
+
+// Add a rule for the commutativity of an operation
+function UseCommutativity(axioms, op) {
+	if (!op) {
+		throw "Must say operand in UseCommutativity";
+	}
+	axioms.push({
+		name: "Commutativity of " + op,
+		args: [],
+		test: function(exp) {
+			var pattern = "@a " + op + " @b = @b " + op + " @a";
+			if (Match(Parse(pattern), exp, Same)) {
+				return false;
+			}
+			throw exp + " is not of the form a+b=b+a".replace(/\+/g, op);
+		}
+	});
+}
+
+function UseDistributivity(axioms, times, plus) {
+	axioms.push({
+		name: "[left] Distributivity of " + times + " over " + plus,
+		args: [],
+		test: function(exp) {
+			if (Match(Parse("@a*(@b+@c)=@a*@b+@a*@c"), exp, Same)) {
+				return;
+			}
+			throw "Not valid a*(b+c) = a*b + a*c";
+		}
+	});
+}
+
+function UseRing(axioms, plus, times) {
+	// Closure is implicit ?
+	plus = plus || "+";
+	times = times || "*";
+	// Commutativity, associativity, distributivity
+	UseReflexive(axioms, "=");
+	UseEqualityProperty(axioms, "+", "Additive");
+	UseEqualityProperty(axioms, "*", "Multiplicative");
+	UseAssociativity(axioms, plus);
+	UseCommutativity(axioms, plus);
+	UseAssociativity(axioms, times);
+	UseDistributivity(axioms, times, plus);
+	// Additive inverse
+	axioms.push({
+		name: "Additive Identity (0)",
+		args: [],
+		test: function(exp) {
+			if (Match(Parse("@a " + plus + " 0 = @a"), exp, Same)) {
+				return;
+			}
+			throw "Expected a + 0 = a";
+		}
+	});
+	axioms.push({
+		name: "Additive Inverse",
+		args: [],
+		test: function(exp) {
+			if (Match(Parse("@a " + plus + " -@a = 0"), exp, Same)) {
+				return;
+			}
+			throw "Expected a + -a = 0";
+		}
+	});
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 function UseNaturalDeduction(axioms) {
 	// Define Universal Instantiation
@@ -48,7 +166,9 @@ function UseNaturalDeduction(axioms) {
 			}
 			for (var i = 0; i < history.length; i++) {
 				if (history[i].assumption && history[i].uses(f.x.name)) {
-					throw "'" + f.x + "' must not appear in any assumptions, but appears in statement " + (i+1);
+					throw "'" + f.x +
+						"' must not appear in any assumptions, but appears in statement " +
+						(i+1);
 				}
 			}
 		}
@@ -64,10 +184,12 @@ function UseNaturalDeduction(axioms) {
 				throw "'implication' must be an implication";
 			}
 			if (!Same(implication.x, args[1])) {
-				throw "'" + implication.x + "' and '" + args[1] + "' don't match, so modus ponens can't be applied";
+				throw "'" + implication.x + "' and '" + args[1] +
+					"' don't match, so modus ponens can't be applied";
 			}
 			if (!Same(implication.y, exp)) {
-				throw "Expected conclusion to be '" + implication.y + "' but got '" + exp + "'";
+				throw "Expected conclusion to be '" + implication.y +
+					"' but got '" + exp + "'";
 			}
 		}
 	});
@@ -126,7 +248,8 @@ function UseNaturalDeduction(axioms) {
 			// Check that 'v' is not used anywhere in the history
 			for (var i = 0; i < history.length; i++) {
 				if (history[i].uses(v.x.name)) {
-					throw "Statement " + (i+1) + " uses variable '" + v.x.name + "', so it cannot be used as the name of a constant.";
+					throw "Statement " + (i+1) + " uses variable '" + v.x.name +
+						"', so it cannot be used as the name of a constant.";
 				}
 			}
 			exp.supposed = v.x.name;

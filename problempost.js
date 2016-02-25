@@ -1,7 +1,9 @@
 solution = Parse(solution);
 
-if (hypotheses.length === 0) {
-	description += "    /PROBLEM DID NOT SPECIFY ANY GIVENS/";
+if (!description) {
+	if (hypotheses.length === 0) {
+		description += "    /PROBLEM DID NOT SPECIFY ANY GIVENS/";
+	}
 }
 if (axioms.length === 0) {
 	description += "    /PROBLEM DID NOT SPECIFY ANY AXIOMS/"
