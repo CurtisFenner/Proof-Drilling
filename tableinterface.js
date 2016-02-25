@@ -218,8 +218,8 @@ function Render(proof) {
 		prooftable.removeChild(prooftable.firstChild);
 	}
 	// Set up main branch of proof:
-	lines.history = [];
-	lines.scope = lines.history; // initial scope is global
+	proof.history = [];
+	proof.scope = proof.history; // initial scope is global
 	var problem = false;
 	var solved = false;
 	var other = false;

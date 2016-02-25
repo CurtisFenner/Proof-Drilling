@@ -59,7 +59,18 @@
 	</style>
 </head>
 <body>
-	<script src="problems/zero.js" charset="utf-8"></script>
+	<div id="stuff"></div>
+	<script>
+	var problem = window.location.href.split("problem=")[1];
+	if (!problem) {
+		problem = "zero";
+		console.log("Implicitly set problem to " + zero);
+	}
+	var scr = document.createElement("script");
+	scr.src = "problems/" + problem + ".js";
+	scr.charset = "utf-8";
+	stuff.appendChild(scr);
+	</script>
 	<p id="problemdescription"></p>
 	<table border="1" id="prooftable"></table>
 	<button id="recheck">Recheck</button>

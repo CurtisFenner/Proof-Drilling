@@ -7,7 +7,6 @@ var implicitSort = {};
 var implicitFlat = {};
 // Compare two expressions
 function Same(a, b) {
-	console.log(a, b);
 	// TODO: Allow normalization for associativity and commutativity
 	var parameter = {sort: implicitSort, flat: implicitFlat};
 	return a.normalize(parameter).compare(b.normalize(parameter), Same);

@@ -7,3 +7,5 @@ hypotheses = [
 UseNaturalDeduction(axioms);
 
 solution = "exist x, B(x) and H(x, x)";
+
+DONE();
