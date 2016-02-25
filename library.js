@@ -252,7 +252,7 @@ function UseNaturalDeduction(axioms) {
 		test: function(exp, args) {
 			var implication = Match(Parse("@x -> @y"), args[0], Same);
 			if (!implication) {
-				throw "'implication' must be an implication";
+				throw "'" + implication + "' must be an implication";
 			}
 			if (!Same(implication.x, args[1])) {
 				throw "'" + implication.x + "' and '" + args[1] +
@@ -283,7 +283,7 @@ function UseNaturalDeduction(axioms) {
 	});
 
 	axioms.push({
-		name: "Conjunction",
+		name: "Conjunction Introduction",
 		args: ["@a", "@b"],
 		test: function(exp, args) {
 			var and = Match(Parse("@a and @b"), exp, Same);
@@ -295,6 +295,20 @@ function UseNaturalDeduction(axioms) {
 			}
 			throw "Does not match.";
 		},
+	});
+	axioms.push({
+		name: "Conjunction Elimination",
+		args: ["@a"],
+		test: function(exp, args) {
+			var and = Match(Parse("@a and @b"), args[0], Same);
+			if (!and) {
+				throw "Expected " + args[0] + " to be of the form X and Y";
+			}
+			if (Same(exp, and.a) || Same(exp, and.b)) {
+				return;
+			}
+			throw "Expected " + exp + " to be either '" + and.a + "' or '" + and.b + "'";
+		}
 	});
 
 	// Existential Elimination.

@@ -249,7 +249,7 @@ function Render(proof) {
 		text += "<br>" + NO + " You have not yet proved ";
 	}
 	if (other) {
-		text += "<br>" + NO + " " + other;
+		text = NO + " " + other + "<br>" + text;
 	}
 	solutionbox.innerHTML = text;
 	var code = document.createElement("span");
