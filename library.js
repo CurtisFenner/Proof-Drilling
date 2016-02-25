@@ -23,9 +23,13 @@ function UseEqualityProperty(axioms, op, name) {
 			}
 			var left = Bin(op, eq.a, "x");
 			var right = Bin(op, eq.b, "x");
-			var pattern = Bin(op, left, right);
-			if (!Match(pattern, exp, Same)) {
-				throw exp + " is not of the form " + pattern;
+			var pattern = Bin(op, left, right); ""
+			var px = Parse("@x " + op + " @a = @x " + op + " @b");
+			var py = Parse("@a " + op + " @x = @b " + op + " @x");
+			if (Match(px, exp, Same, {a: eq.a, b: eq.b}) || Match(py, exp, Same, {a: eq.a, b: eq.b})) {
+				return;
+			} else {
+				throw exp + " is not of the form " + px;
 			}
 		}
 	});
