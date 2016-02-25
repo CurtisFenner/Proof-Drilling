@@ -150,6 +150,16 @@ function UseDistributivity(axioms, times, plus) {
 			throw "Not valid a*(b+c) = a*b + a*c";
 		}
 	});
+	axioms.push({
+		name: "[right] Distributivity of " + times + " over " + plus,
+		args: [],
+		test: function(exp) {
+			if (Match(Parse("(@b+@c)*@a=@b*@a+@c*@a"), exp, Same)) {
+				return;
+			}
+			throw "Not valid (b+c)*a = b*a + c*a";
+		}
+	});
 }
 
 function UseRing(axioms, plus, times) {
