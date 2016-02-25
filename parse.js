@@ -224,7 +224,6 @@ function ParseShunting(tokens) {
 // Throws on invalid input
 function Parse(text) {
 	var x = ParseShunting( Tokens(text) );
-	console.log(x);
 	for (var i = 0; i < x.length; i++) {
 		var t = x[i];
 		if (getPrecedence(t)) {
