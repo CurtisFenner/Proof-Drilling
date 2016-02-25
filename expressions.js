@@ -119,6 +119,23 @@ Expression.prototype.invalid = function invalid(data) {
 	return false;
 };
 
+// "Normalizes" this expression (sorts commutative, re-groups associative)
+Expression.prototype.normalize = function normalizeExpression(p) {
+	var as = this.args.map(function(x){return x.normalize(p);});
+	var x = [];
+	for (var i = 0; i < as.length; i++) {
+		if (p.flat[this.operator] && args[i].operator === this.operator) {
+			x = x.concat(as[i].args);
+		} else {
+			x.push(as[i]);
+		}
+	}
+	if (p.sort[this.operator]) {
+		x = x.sort();
+	}
+	return new Expression(this.operator, x);
+}
+
 Expression.prototype.uses = function(name) {
 	for (var i = 0; i < this.args.length; i++) {
 		if (this.args[i].uses(name)) {
@@ -156,6 +173,9 @@ Atom.prototype.invalid = function(data) {
 };
 Atom.prototype.uses = function(name) {
 	return this.name === name;
+};
+Atom.prototype.normalize = function() {
+	return new Atom(this.name);
 };
 
 // Match an expression against an expression pattern

@@ -3,10 +3,14 @@
 // 4 February 2016
 "use strict";
 
+var implicitSort = {};
+var implicitFlat = {};
 // Compare two expressions
 function Same(a, b) {
+	console.log(a, b);
 	// TODO: Allow normalization for associativity and commutativity
-	return a.compare(b, Same);
+	var parameter = {sort: implicitSort, flat: implicitFlat};
+	return a.normalize(parameter).compare(b.normalize(parameter), Same);
 }
 
 function UseEqualityProperty(axioms, op, name) {
@@ -39,6 +43,24 @@ function UseReflexive(axioms, op) {
 				return false;
 			}
 			throw exp + " is not of the form a " + op + " a";
+		}
+	});
+}
+
+function UseSymmetry(axioms, op) {
+	op = op || "=";
+	axioms.push({
+		name: "Symmetry of " + op,
+		args: ["@flipped"],
+		test: function(exp, args) {
+			var m = Match(Parse("@a " + op + " @b"), exp, Same);
+			if (!m) {
+				throw exp + " is not of the form a " + op + " b";
+			}
+			if (Match(Parse("@b " + op + " @a"),args[0], m)) {
+				return;
+			}
+			throw "Invalid";
 		}
 	});
 }

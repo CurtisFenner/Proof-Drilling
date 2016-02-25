@@ -225,7 +225,9 @@ function Render(proof) {
 	var other = false;
 	for (var i = 0; i < proof.length; i++) {
 		problem = RenderLine(proof, i) || problem;
-		if (Same(solution, proof[i].expression) && !proof.scope.parent) {
+		if (proof[i].expression
+			&& Same(solution, proof[i].expression)
+			&& !proof.scope.parent) {
 			solved = true;
 		}
 	}
