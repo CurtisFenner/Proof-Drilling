@@ -44,12 +44,26 @@ function UseTransitivity(axioms, op, name) {
 			if (!m0) { throw args[0] + " should be in the form a=b";}
 			var m1 = Match( Parse("@b = @c"), args[1], Same, {a:m0.a,b:m0.b} );
 			var m2 = Match( Parse("@c = @b"), args[1], Same, {a:m0.a,b:m0.b} );
-			if (!m1 && !m2) { throw args[1] + " should be in the form b=c";}
 			var m = m1 || m2;
-			var a = Match( Parse("@a = @c"), exp, Same, m );
-			var b = Match( Parse("@c = @a"), exp, Same, m );
-			if (a || b) {
-				return;
+			if (m) {
+				var a = Match( Parse("@a = @c"), exp, Same, m );
+				var b = Match( Parse("@c = @a"), exp, Same, m );
+				if (a || b) {
+					return;
+				}
+			}
+			//
+			var m0 = Match( Parse("@b = @a"), args[0], Same );
+			if (!m0) { throw args[0] + " should be in the form a=b";}
+			var m1 = Match( Parse("@b = @c"), args[1], Same, {a:m0.a,b:m0.b} );
+			var m2 = Match( Parse("@c = @b"), args[1], Same, {a:m0.a,b:m0.b} );
+			var m = m1 || m2;
+			if (m) {
+				var a = Match( Parse("@a = @c"), exp, Same, m );
+				var b = Match( Parse("@c = @a"), exp, Same, m );
+				if (a || b) {
+					return;
+				}
 			}
 			throw "Invalid.";
 		}
