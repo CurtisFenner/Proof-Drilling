@@ -1,3 +1,8 @@
+// This file includes several polyfills, plus Show(object) which shows an
+// object.
+
+////////////////////////////////////////////////////////////////////////////////
+
 function Show(a) {
     if (a.latex) {
         return a.latex();

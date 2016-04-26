@@ -3,6 +3,30 @@
 // 4 February 2016
 "use strict";
 
+// This file defines the behavior of "Expressions", a class similar to WeBWorK's
+// MathObject.
+
+// new Expression(string operator, Expression[] arguments)
+	// .latex() -> string
+	// .toString() -> string
+	// .compare(Expression other) -> boolean
+	// .introducesVariable() -> boolean
+	// .invalid() -> boolean
+	// .normalize() -> Expression
+	// .uses(String name) -> boolean
+
+// Bin(string operator, Expression left, Expression right)
+
+// Un(string operator, Expression argument)
+
+//Atom(name) // used for number literals & variables & predicates & functions
+	// Atom satisfies the Expression interface
+
+// Match(Expression pattern, Expression object, Function eq, Dictionary matchings)
+
+// Substitute(Expression needle, Expression replacement, Expression haystack)
+
+////////////////////////////////////////////////////////////////////////////////
 
 // Represents an expression
 // `op` is an operator (string)

@@ -3,6 +3,46 @@
 // 4 February 2016
 "use strict";
 
+// This file defines many useful "built-in" rules that can be used in the proof
+// checker (so that you wouldn't have to type them yourself when writing a
+// new problem)
+
+// Same(Expression a, Expression b) -> boolean
+	// useful for "eq" parameter in Match
+	// useful for checking right answers
+
+// UseEqualityProperty(axioms, String operator, String name)
+	// name: of operator. displayed to student
+	// e.g. UseEqualityProperty(axioms, "*", "multiplicative") gives
+	//    a = b ==> c*a = c*b
+
+// UseTransitivity(axioms, String operator, String name)
+	// TODO: fix this. currently also assumes symmetric
+
+// UseReflexive(axioms, String operator)
+
+// UseSymmetry(axioms, String operator)
+
+// UseAssociativity(axioms, String operator)
+
+// UseCommutativity(axioms, String operator)
+
+// UseDistributivity(axioms, String timesOperator, String plusOperator)
+
+// UseRing(axioms, String plusOperator, String timesOperator)
+
+// UseNaturalDeduction(axioms)
+	// gives Universal/Existential Elimination/Introduction
+	// gives modus ponens
+	// gives conjunction introduction / elimination
+	// ALSO GIVES GENERIC "conclude"
+	// TODO: move generic conclude elsewhere
+
+// SEE DOCUMENTATION AT BOTTOM OF FILE:
+// FOR FORMAT OF A NEW DEDUCTIVE RULE / AXIOM / THEOREM
+
+////////////////////////////////////////////////////////////////////////////////
+
 var implicitSort = {};
 var implicitFlat = {};
 // Compare two expressions
@@ -362,13 +402,18 @@ function UseNaturalDeduction(axioms) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// name: Name of axiom (listed in dropdown)
+// FORMAT OF AXIOM/DEDUCTIVE RULE/THEOREM:
+
+// name: Name of axiom (listed in dropdown -- for interface only)
 // args: List of arguments for axiom. Names are listed above inputs.
-//       The first character is either
-//       @ signifying the input is a statement number
-//       $ signifying the input is an expression
+//       The first character must be an '@'.
+//       @ signifies the input is a statement number.
 // test: A function taking (student statement, [argument expressions])
-//       It throws in the event the student statement does not follow
-//       and otherwise returns anything truthy
-// opens:
-// closes: DO NOT USE except for single 'Conclude' for safety
+//       It THROWS an error message if the justification is invalid,
+//       and otherwise returns anything truthy.
+//       student statement: the line to be justified.
+//       argument expressions: the expressions referred to by "args" (previously
+//       proved statements)
+// opens: boolean
+// closes: DO NOT USE. There should be ONE single implementation of 'Conclude',
+//         for safety. (See UseNaturalDeduction for this implementation)

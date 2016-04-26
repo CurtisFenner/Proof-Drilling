@@ -1,6 +1,14 @@
 // Parse expressions
 "use strict";
 
+// This file parses strings into Expression objects.
+// It is a shunting-yard-algorithm, with some extra cleanup to support human-
+// friendly quantifier syntax, and an explicit functiona-application operator.
+
+// Parse(String input) -> Expression
+
+////////////////////////////////////////////////////////////////////////////////
+
 function isSpace(c) {
 	return c.trim() === "";
 }

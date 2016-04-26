@@ -3,6 +3,17 @@
 // 4 February 2016
 "use strict";
 
+// This file defines both the generator for the HTML that's shown on the page,
+// as well as the meat of the proof verification.
+
+// Setup() calls Render() and enables the re-render button.
+
+// Render() checks the contents of the table and shows feedback.
+
+// RenderLine() checks an individual line, giving feedback
+
+////////////////////////////////////////////////////////////////////////////////
+
 // A convenience method for creating a DOM object of
 // type `e` and adding it to `parent`
 function make(e, parent) {
@@ -25,18 +36,18 @@ var INDENT = "\\Big|\\;\\;";
 
 // Render a single line of the table (creating a <tr>)
 function RenderLine(proof, i) {
-	var line = make("tr", prooftable);
+	var line = make("tr", prooftable); // <-- table row HTML element
 	var equation = make("td", line);
 	equation.className = "left";
 	var num = make("td", line);
 	num.className = "right";
 	var box = make("td", line);
 	var reason = make("td", line);
-	var argCells = [];
+	var argCells = []; // <-- table datum HTML element
 	var argLabels = [];
-	var argInputs = [];
+	var argInputs = []; // <-- the previous-statement-number inputs for this line
 	// Set up the arguments fields and attach labels
-	for (var j = 0; j < 2; j++) {
+	for (var j = 0; j < 2; j++) { // <-- make up to 3 previous statement inputs
 		var cell = make("td", line);
 		argCells.push( cell );
 		var label = make("span", cell);
@@ -47,9 +58,10 @@ function RenderLine(proof, i) {
 		input.value = proof[i].args[j];
 		argInputs.push( input );
 	}
-	var errors = make("td", line);
-	// This function updates the labels of the arguments
+	var errors = make("td", line); // <-- error table cell
 	var updateLabels = function() {
+		// This function interactively disables/enables the previous-statement-
+		// inputs. (It is not necessary functionally)
 		var ax = axioms[s.value];
 		for (var j = 0; j < argLabels.length; j++) {
 			argLabels[j].textContent = "";
@@ -82,11 +94,11 @@ function RenderLine(proof, i) {
 	e.value = proof[i].text;
 	e.className = "long";
 	e.oninput = function() {
-		proof[i].text = e.value;
+		proof[i].text = e.value; // <-- proof[i] is the proof-data for this row
 	};
 	// Create the justification drop down
-	var s = make("select", reason);
-	if (e.disabled) {
+	var s = make("select", reason); // <-- make reason drop-down
+	if (e.disabled) { // <-- (is a given statement, from `hypotheses` array)
 		var x = make("option", s);
 		x.textContent = "given";
 		s.disabled = true;

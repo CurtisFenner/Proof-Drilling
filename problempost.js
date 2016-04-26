@@ -1,3 +1,10 @@
+// This file defines 'DONE()' which should be the last line of every problem
+// definition script.
+
+// DONE() builds the proof table and shows and enables it.
+
+////////////////////////////////////////////////////////////////////////////////
+
 function DONE(){
 	solution = Parse(solution);
 
